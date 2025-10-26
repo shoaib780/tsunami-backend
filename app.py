@@ -45,19 +45,11 @@ def home():
 
 # 🔮 Prediction Route
 @app.post("/predict")
-async def predict_tsunami(request: Request):
+async def predict_tsunami(input_data: TsunamiInput):
     """
     Predicts whether a tsunami is likely based on earthquake parameters.
     """
-
     try:
-        # Parse JSON manually (so we can print it if invalid)
-        body = await request.json()
-        print("📩 Received Data:", body)
-
-        # Validate data
-        input_data = TsunamiInput(**body)
-
         # Convert validated input into DataFrame
         new_data = pd.DataFrame([input_data.dict()])
 
@@ -73,10 +65,6 @@ async def predict_tsunami(request: Request):
             "input": input_data.dict(),
             "prediction": result
         }
-
-    except ValidationError as ve:
-        print("❌ Validation Error:", ve.errors())
-        return {"error": "Invalid input format", "details": ve.errors()}
 
     except Exception as e:
         print("⚠️ Prediction Error:", str(e))
